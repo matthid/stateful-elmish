@@ -18,10 +18,11 @@ let init () =
 let update (msg:Msg) (model:Model) =
     match msg with
     | Increment -> { model with State = model.State + 1 }, Cmd.none
-    | Decrement -> { model with State = model.State + 1 }, Cmd.none
+    | Decrement -> { model with State = model.State - 1 }, Cmd.none
 
 type IStateManager =
     abstract State : Model
+    abstract Dispatch : Dispatch<Msg>
     abstract StartIncrement : unit -> unit
     abstract StartDecrement : unit -> unit
 
@@ -48,6 +49,7 @@ let createDispatchAndCmd () =
 
 type StateManager (state : Model, dispatch : Dispatch<Msg>) =
     interface IStateManager with
+        member x.Dispatch = dispatch
         member x.State = state
         member x.StartIncrement () =
             dispatch Increment
@@ -56,3 +58,26 @@ type StateManager (state : Model, dispatch : Dispatch<Msg>) =
     static member Create(state:Model) =
         let dispatch, cmd = createDispatchAndCmd ()
         cmd, StateManager(state, dispatch)
+
+open Elmish.React
+open Fable.React
+open Fable.React.Props
+open Fetch.Types
+open Thoth.Fetch
+open Fulma
+open Thoth.Json
+
+let button txt onClick =
+    Button.button
+        [ Button.IsFullWidth
+          Button.Color IsPrimary
+          Button.OnClick onClick ]
+        [ str txt ]
+
+let view (state:Model) (dispatch:Dispatch<Msg>) =
+    Container.container []
+      [ Content.content [ Content.Modifiers [ Modifier.TextAlignment (Screen.All, TextAlignment.Centered) ] ]
+            [ Heading.h3 [] [ str ("Press buttons to manipulate counter: " + string state.State) ] ]
+        Columns.columns []
+            [ Column.column [] [ button "-" (fun _ -> dispatch Decrement) ]
+              Column.column [] [ button "+" (fun _ -> dispatch Increment) ] ] ]

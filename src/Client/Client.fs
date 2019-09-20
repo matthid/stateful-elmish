@@ -79,7 +79,10 @@ let view (model : Model) (dispatch : Msg -> unit) =
             [ Navbar.Item.div [ ]
                 [ Heading.h2 [ ]
                     [ str "SAFE Template" ] ] ]
-
+          
+          Container.container [] 
+            [ Comp1.view (State.StateManager(model.Shared, StateMsg >> dispatch)) model.Comp1 (Comp1 >> dispatch)
+              Comp2.view (State.StateManager(model.Shared, StateMsg >> dispatch)) model.Comp2 (Comp2 >> dispatch) ]
 
           Footer.footer [ ]
                 [ Content.content [ Content.Modifiers [ Modifier.TextAlignment (Screen.All, TextAlignment.Centered) ] ]
