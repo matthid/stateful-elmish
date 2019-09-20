@@ -2,18 +2,25 @@ module Comp2
 
 open Elmish
 
-// This model 'needs to be updated' from multiple components
-type Model = { State: int }
+type Model = { Comp2: string }
 
-// The Msg type defines what events/actions can occur while the application is running
-// the state of the application changes *only* in reaction to these events
 type Msg =
-    | Increment
-    | Decrement
+    | SomeComp2Msg
 
 let init () =
-    { State = 0 }
+    { Comp2 = "" }
 
-let update (msg:Msg) (model:Model) =
-    model, Cmd.none
+let update (state:State.IStateManager) (msg:Msg) (model:Model) =
+    let shared = state.State.State
+    let cmd = Cmd.ofSub(fun dispatch ->
+        // Works, but order might change...
+        dispatch(SomeComp2Msg)
+        state.StartDecrement ()
+        dispatch(SomeComp2Msg))
+    // Works    
+    state.StartIncrement()
+    model, cmd
 
+let view (state:State.IStateManager) (model:Model) (dispatch:Dispatch<Msg>) =
+    //
+    ()
