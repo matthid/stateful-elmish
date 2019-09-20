@@ -33,11 +33,13 @@ let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     | Comp1 msg ->
         let sharedCmd, mgr = State.StateManager.Create(model.Shared)
         let updateModel, cmd = Comp1.update mgr msg model.Comp1
-        { model with Comp1 = updateModel }, Cmd.batch [ Cmd.map Comp1 cmd; Cmd.map StateMsg sharedCmd ]
+        // SharedCmd should be first!
+        { model with Comp1 = updateModel }, Cmd.batch [ Cmd.map StateMsg sharedCmd; Cmd.map Comp1 cmd  ]
     | Comp2 msg ->
         let sharedCmd, mgr = State.StateManager.Create(model.Shared)
         let updateModel, cmd = Comp2.update mgr msg model.Comp2
-        { model with Comp2 = updateModel }, Cmd.batch [ Cmd.map Comp2 cmd; Cmd.map StateMsg sharedCmd ]
+        // SharedCmd should be first!
+        { model with Comp2 = updateModel }, Cmd.batch [ Cmd.map StateMsg sharedCmd; Cmd.map Comp2 cmd ]
     //| _ -> model, Cmd.none
 
 let safeComponents =
